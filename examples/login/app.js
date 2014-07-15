@@ -1,7 +1,7 @@
 var express = require('express')
     , passport = require('passport')
     , util = require('util')
-    , TistoryStrategy = require('../../lib').Strategy;
+    , TistoryStrategy = require('../../lib/passport-tistory').Strategy;
 
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -64,10 +64,12 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+//app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({ secret: 'keyboard cat' }))
+//app.use(session({ secret: 'keyboard cat' }))
+app.use(session({secret: '<mysecret>', saveUninitialized: true, resave: true}));
 app.use(passport.initialize());
 app.use(passport.session())
 
