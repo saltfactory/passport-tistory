@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="passport-tistory : Tistory Blog Authentication Node.js Module" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>passport-tistory</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/saltfactory/passport-tistory">View on GitHub</a>
+
+          <h1 id="project_title">passport-tistory</h1>
+          <h2 id="project_tagline">Tistory Blog Authentication Node.js Module</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/saltfactory/passport-tistory/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/saltfactory/passport-tistory/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="passport-tistory" class="anchor" href="#passport-tistory"><span class="octicon octicon-link"></span></a>passport-tistory</h1>
+
+<p><strong><em>passport-tistory</em></strong> 는 <a href="http://www.tistory.com">Tistory</a> 블로그의 API를 사용하기 위해서 <code>passport</code>를 사용해 복잡한 인증과정을 간단하게 구현한 인증구현체 모듈이다.
+Tistory 인증 API는 OAuth 2.0 기반의 인증 방식을 사용하고 있다. 그래서 <code>passport-oauth2</code>를 상속받아 만들어져 있다.</p>
+
+<p>Tistory 오픈 API를 사용하기 위해서는 다음과 같은 과정이 필요하다.</p>
+
+<ol>
+<li>Tistory 사이트에서 클라이언트(웹, 앱 서비스 등록)를 등록</li>
+<li>웹 프레임워크 설치 (express.js)</li>
+<li>
+<code>passport-tistory</code> 설치</li>
+<li>웹 프레임워크에서 <code>passport-tistory</code> 연동</li>
+<li>Tistory 인증처리 테스트 후 accessToken 획득</li>
+<li>accessToken으로 Tistory 오픈 API 사용</li>
+</ol><h1>
+<a name="%EC%84%A4%EC%B9%98" class="anchor" href="#%EC%84%A4%EC%B9%98"><span class="octicon octicon-link"></span></a>설치</h1>
+
+<p>passport-tistory 은 npm으로 간단히 설치 할 수 있다.</p>
+
+<pre><code>npm install passport-tistory
+</code></pre>
+
+<h1>
+<a name="%EC%82%AC%EC%9A%A9%EB%B0%A9%EB%B2%95" class="anchor" href="#%EC%82%AC%EC%9A%A9%EB%B0%A9%EB%B2%95"><span class="octicon octicon-link"></span></a>사용방법</h1>
+
+<p>passport-tistory 사용 방법은 <code>passport</code> 모듈과 <code>passport-tistory</code> 모듈을 로드해서 다음과 같이 인증이 필요한 부분에 <code>passport.use()</code> 사용한다.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">passport</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'passport'</span><span class="p">),</span>
+    <span class="nx">TistoryStrategy</span><span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'passport-tistory'</span><span class="p">).</span><span class="nx">Strategy</span><span class="p">;</span>
+
+<span class="nx">passport</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">new</span> <span class="nx">TistoryStrategy</span><span class="p">({</span>
+    <span class="nx">clientID</span> <span class="o">:</span> <span class="nx">clientID</span><span class="p">,</span>
+    <span class="nx">callbackURL</span> <span class="o">:</span> <span class="nx">callbackURL</span>
+  <span class="p">},</span>
+  <span class="kd">function</span><span class="p">(</span><span class="nx">accessToken</span><span class="p">,</span> <span class="nx">refreshToken</span><span class="p">,</span> <span class="nx">profile</span><span class="p">,</span> <span class="nx">done</span><span class="p">){</span>
+    <span class="c1">// 사용자의 정보는 profile에 들어있다.</span>
+    <span class="nx">User</span><span class="p">.</span><span class="nx">findOrCreate</span><span class="p">(...,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">done</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span> <span class="p">}</span>
+      <span class="nx">done</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">user</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">));</span>
+</pre></div>
+
+<h1>
+<a name="tistory-client-%EB%93%B1%EB%A1%9D%ED%95%98%EA%B8%B0" class="anchor" href="#tistory-client-%EB%93%B1%EB%A1%9D%ED%95%98%EA%B8%B0"><span class="octicon octicon-link"></span></a>Tistory Client 등록하기</h1>
+
+<p><code>passport-tistory</code> 는 Tistory API를 사용하기 위해서 인증을 처리하는 모듈로 Tistory API를 사용하기 위해서는 가장먼저 티스토리에서 클라이언트를 등록해야한다.</p>
+
+<p>Tistory 오픈 API를 사용하기 위해서는 다음 문서를 먼저 확인한다.</p>
+
+<ul>
+<li><a href="http://www.tistory.com/guide/api/oauth">Tistory 인증가이드</a></li>
+<li><a href="http://www.tistory.com/guide/api/index">Tistory API가이드</a></li>
+</ul><p>위 두 문서를 참조하고 난 후 <a href="http://www.tistory.com/guide/api/manage/register">Tistory 클라이언트트 등록</a>을 한다.</p>
+
+<p>클라인트 등록을 필드 속성은 다음과 같다.</p>
+
+<table>
+<thead><tr>
+<th>필드명</th>
+<th>설명</th>
+<th>비고</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>서비스 명</td>
+<td>Tistory 클리언트 이름을 입력한다</td>
+<td></td>
+</tr>
+<tr>
+<td>설명</td>
+<td>설명을 입력한다</td>
+<td></td>
+</tr>
+<tr>
+<td>로그</td>
+<td>로고가 될 파일을 업로드한다</td>
+<td></td>
+</tr>
+<tr>
+<td>서비스형태</td>
+<td>웹서비스, PC애프리케이션, 모바일 중에 선택을 한다</td>
+<td></td>
+</tr>
+<tr>
+<td>서비스 권한</td>
+<td>읽기전용, 읽기/쓰기 중에 선택을 한다</td>
+<td>읽기전용을하면 블로그에 글을 등록, 수정, 삭제를 할 수 없다</td>
+</tr>
+<tr>
+<td>서비스URL</td>
+<td>Tistory 클라이언트를 만들어서 사용할 host의 URL을 입력합니다.</td>
+<td>개발할 때는 <a href="http://127.0.0.1">http://127.0.0.1</a> 로 지정한다</td>
+</tr>
+<tr>
+<td>CallBack 경로</td>
+<td>Tistory 인증 후에 보여진 URL을 한다</td>
+<td>개발할 때는 <a href="http://127.0.0.1/auth/tistory/callback">http://127.0.0.1/auth/tistory/callback</a> 으로 지정한다</td>
+</tr>
+</tbody>
+</table><h1>
+<a name="expressjs%EC%99%80-%EC%97%B0%EB%8F%99%ED%95%98%EA%B8%B0" class="anchor" href="#expressjs%EC%99%80-%EC%97%B0%EB%8F%99%ED%95%98%EA%B8%B0"><span class="octicon octicon-link"></span></a>Express.js와 연동하기</h1>
+
+<p>웹 서비스를 만들기 위해서 Express.js 를 사용하고 있다면 다음과 같인 <code>passport-tistory</code>를 연동해서 사용할 수 있다.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'express'</span><span class="p">)</span>
+    <span class="p">,</span> <span class="nx">passport</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'passport'</span><span class="p">)</span>
+    <span class="p">,</span> <span class="nx">util</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'util'</span><span class="p">)</span>
+    <span class="p">,</span> <span class="nx">TistoryStrategy</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'passport-tistory'</span><span class="p">).</span><span class="nx">Strategy</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">cookieParser</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'cookie-parser'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">bodyParser</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'body-parser'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'path'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">logger</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'morgan'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">session</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'express-session'</span><span class="p">);</span>
+
+
+<span class="kd">var</span> <span class="nx">TISTORY_CLIENT_ID</span> <span class="o">=</span> <span class="s2">""</span>        <span class="c1">// 티스토리 API를 사용하기 위해서 등록한 Client의 Client ID</span>
+<span class="kd">var</span> <span class="nx">TISTORY_CLIENT_SECRET</span> <span class="o">=</span> <span class="s2">""</span><span class="p">;</span>   <span class="c1">// 티스토리 API를 사용하기 이해서 등록한 Client의 Clietn Secret</span>
+
+<span class="nx">passport</span><span class="p">.</span><span class="nx">serializeUser</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">done</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">user</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">passport</span><span class="p">.</span><span class="nx">deserializeUser</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">done</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">obj</span><span class="p">);</span>
+<span class="p">});</span>
+
+
+<span class="nx">passport</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">new</span> <span class="nx">TistoryStrategy</span><span class="p">({</span>
+      <span class="nx">clientID</span><span class="o">:</span> <span class="nx">TISTORY_CLIENT_ID</span><span class="p">,</span>
+      <span class="nx">clientSecret</span><span class="o">:</span> <span class="nx">TISTORY_CLIENT_SECRET</span><span class="p">,</span>
+      <span class="nx">callbackURL</span><span class="o">:</span> <span class="s2">"http://127.0.0.1:3000/auth/tistory/callback"</span>
+    <span class="p">},</span>
+    <span class="kd">function</span><span class="p">(</span><span class="nx">accessToken</span><span class="p">,</span> <span class="nx">refreshToken</span><span class="p">,</span> <span class="nx">profile</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// asynchronous verification, for effect...</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"accessToken: "</span> <span class="o">+</span> <span class="nx">accessToken</span><span class="p">);</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"refreshToken: "</span> <span class="o">+</span><span class="nx">refreshToken</span><span class="p">);</span>
+
+      <span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">done</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">profile</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">));</span>
+
+<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">();</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'views'</span><span class="p">,</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">'views'</span><span class="p">));</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'view engine'</span><span class="p">,</span> <span class="s1">'jade'</span><span class="p">);</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">logger</span><span class="p">(</span><span class="s1">'dev'</span><span class="p">));</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">bodyParser</span><span class="p">.</span><span class="nx">json</span><span class="p">());</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">bodyParser</span><span class="p">.</span><span class="nx">urlencoded</span><span class="p">());</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">cookieParser</span><span class="p">());</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="kr">static</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">'public'</span><span class="p">)));</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">session</span><span class="p">({</span> <span class="nx">secret</span><span class="o">:</span> <span class="s1">'keyboard cat'</span> <span class="p">}))</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">passport</span><span class="p">.</span><span class="nx">initialize</span><span class="p">());</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">passport</span><span class="p">.</span><span class="nx">session</span><span class="p">())</span>
+
+<span class="c1">// GET /</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">'index'</span><span class="p">,</span> <span class="p">{</span> <span class="nx">user</span><span class="o">:</span> <span class="nx">req</span><span class="p">.</span><span class="nx">user</span> <span class="p">});</span>
+<span class="p">});</span>
+
+<span class="c1">// GET /account</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/account'</span><span class="p">,</span> <span class="nx">ensureAuthenticated</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">'account'</span><span class="p">,</span> <span class="p">{</span> <span class="nx">user</span><span class="o">:</span> <span class="nx">req</span><span class="p">.</span><span class="nx">user</span> <span class="p">});</span>
+<span class="p">});</span>
+
+<span class="c1">// GET /login</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/login'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">'login'</span><span class="p">,</span> <span class="p">{</span> <span class="nx">user</span><span class="o">:</span> <span class="nx">req</span><span class="p">.</span><span class="nx">user</span> <span class="p">});</span>
+<span class="p">});</span>
+
+<span class="c1">// GET /auth/tistory</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/auth/tistory'</span><span class="p">,</span>
+    <span class="nx">passport</span><span class="p">.</span><span class="nx">authenticate</span><span class="p">(</span><span class="s1">'tistory'</span><span class="p">),</span>
+    <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">req</span><span class="p">);</span>
+    <span class="p">});</span>
+
+<span class="c1">// GET /auth/tistory/callback</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/auth/tistory/callback'</span><span class="p">,</span>
+    <span class="nx">passport</span><span class="p">.</span><span class="nx">authenticate</span><span class="p">(</span><span class="s1">'tistory'</span><span class="p">,</span> <span class="p">{</span> <span class="nx">failureRedirect</span><span class="o">:</span> <span class="s1">'/login'</span> <span class="p">}),</span>
+    <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">req</span><span class="p">);</span>
+      <span class="nx">res</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s1">'/'</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="c1">// GET /logout</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/logout'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+  <span class="nx">req</span><span class="p">.</span><span class="nx">logout</span><span class="p">();</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s1">'/'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">ensureAuthenticated</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">isAuthenticated</span><span class="p">())</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">next</span><span class="p">();</span> <span class="p">}</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s1">'/login'</span><span class="p">)</span>
+<span class="p">}</span>
+
+</pre></div>
+
+<h1>
+<a name="profile-%ED%94%84%EB%A1%9C%ED%8D%BC%ED%8B%B0" class="anchor" href="#profile-%ED%94%84%EB%A1%9C%ED%8D%BC%ED%8B%B0"><span class="octicon octicon-link"></span></a>profile 프로퍼티</h1>
+
+<p>Tistory는 user 고유 정보를 가져오는 API가 존재하지 않는다. 그래서 다른 passport plugins과 달리 profile 정보로 Tistory의 blogInfo를 가져오게 했다.</p>
+
+<table>
+<thead><tr>
+<th>key</th>
+<th>value</th>
+<th>description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>provider</td>
+<td>String</td>
+<td>tistory 고정</td>
+</tr>
+<tr>
+<td>id</td>
+<td>String</td>
+<td>Tistory 블로그 계정</td>
+</tr>
+<tr>
+<td>userId</td>
+<td>String</td>
+<td>Tistory 계정 userId</td>
+</tr>
+<tr>
+<td>tistory</td>
+<td>Object</td>
+<td>Tistory 정보</td>
+</tr>
+<tr>
+<td>status</td>
+<td>String</td>
+<td>결과 상태 값</td>
+</tr>
+<tr>
+<td>item</td>
+<td>Array</td>
+<td>Tistory에 만들어진 블로그의 정보</td>
+</tr>
+</tbody>
+</table><h1>
+<a name="copyright-and-license" class="anchor" href="#copyright-and-license"><span class="octicon octicon-link"></span></a>Copyright and License</h1>
+
+<p>The MIT License (MIT)</p>
+
+<p>Copyright (c) 2014 SungKwang Song</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">passport-tistory maintained by <a href="https://github.com/saltfactory">saltfactory</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
