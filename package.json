@@ -15,7 +15,7 @@
   "main": "./lib/passport-tistory",
   "dependencies": {
     "passport": "~0.2.0",
-    "passport-oauth2":"~1.1.2",
+    "passport-oauth2":"~1.1.2"
   },
   "licenses": [ {
     "type": "MIT",
