@@ -16,8 +16,6 @@
   "dependencies": {
     "passport": "~0.2.0",
     "passport-oauth2":"~1.1.2",
-    "follow-redirects":"~0.0.3",
-    "querystring":"~0.2.0"
   },
   "licenses": [ {
     "type": "MIT",
