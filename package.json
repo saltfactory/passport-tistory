@@ -17,15 +17,10 @@
   },
   "main": "./lib/passport-tistory",
   "dependencies": {
-<<<<<<< HEAD
     "passport": "^0.3.0",
     "passport-oauth2": "^1.1.2",
     "querystring": "^0.2.0",
     "request": "^2.64.0"
-=======
-    "passport": "~0.2.0",
-    "passport-oauth2":"~1.1.2"
->>>>>>> master
   },
   "licenses": [
     {
